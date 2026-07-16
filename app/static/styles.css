@@ -564,6 +564,58 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   font-weight: 500;
 }
 
+.diagnosis-block {
+  margin-top: 12px;
+  border-top: 1px solid currentColor;
+  padding-top: 14px;
+  color: var(--ink);
+}
+
+.diagnosis-block h3 {
+  margin: 14px 0 5px;
+  font-size: 0.86rem;
+}
+
+.diagnosis-block h3:first-child {
+  margin-top: 0;
+}
+
+.diagnosis-block p,
+.diagnosis-block ul,
+.diagnosis-block ol {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.diagnosis-block ul,
+.diagnosis-block ol {
+  padding-left: 1.4rem;
+}
+
+.diagnosis-details {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.diagnosis-details div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.35fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.diagnosis-details dt {
+  font-weight: 750;
+}
+
+.diagnosis-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .status-error {
   color: var(--danger);
   background: var(--danger-soft);
