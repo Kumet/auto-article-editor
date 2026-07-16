@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.auth import require_basic_auth
 from app.extractor import ArticleExtractionError, extract_article
 from app.llm import rewrite_article
 from app.settings import load_settings, save_settings
@@ -18,8 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR.parent / ".env")
 
 app = FastAPI(title="記事編集アプリ")
+app.middleware("http")(require_basic_auth)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 @app.get("/", response_class=HTMLResponse)
