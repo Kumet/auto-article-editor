@@ -25,6 +25,14 @@ class DefaultTemplateTest(unittest.TestCase):
         self.assertIn("【SEO・AIOの基本ルール】", settings["default_template"])
         self.assertIn("<h2>よくある質問</h2>", settings["default_template"])
         self.assertIn("WordPress本文へ保存できるHTML断片", settings["default_template"])
+        self.assertIn(
+            "記事内容を具体的に表す自然な日本語の見出しへ必ず変更",
+            settings["default_template"],
+        )
+        self.assertNotIn("<h2>テーマの結論</h2>", settings["default_template"])
+        self.assertNotIn("<h2>テーマの基本情報</h2>", settings["default_template"])
+        self.assertNotIn("<h3>項目名</h3>", settings["default_template"])
+        self.assertNotIn("<h3>質問文</h3>", settings["default_template"])
 
     def test_environment_template_still_takes_precedence(self):
         with tempfile.TemporaryDirectory() as directory:
