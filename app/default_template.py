@@ -166,7 +166,7 @@ h2見出しには、事例の内容が具体的に伝わる文言を使用して
 ・読者に話しかけすぎず、信頼感のある落ち着いた文体にしてください。
 
 【出力形式】
-・WordPress本文へ保存できるHTML断片だけを出力してください。
+・WordPress本文へそのまま貼り付けられるHTML断片だけを出力してください。
 ・Markdown、コードブロック、説明文は出力しないでください。
 ・h1、html、head、body、style、scriptタグは使用しないでください。
 ・主にh2、h3、p、strong、ul、ol、li、table、thead、tbody、tr、th、td、blockquote、aを使用してください。

@@ -6,7 +6,7 @@
   <header class="page-header compact-header">
     <p class="eyebrow">SETTINGS</p>
     <h1>設定</h1>
-    <p class="lead">普段使う記事の型と、下書きの保存先を設定します。</p>
+    <p class="lead">普段使う記事の型を設定します。</p>
   </header>
 
   {% if message %}
@@ -21,8 +21,8 @@
       <strong>Render Freeでは画面からの変更は一時的です。</strong>
       <p>
         スピンダウン、再起動、再デプロイ後は、Renderの環境変数
-        <code>WP_URL</code> と <code>DEFAULT_ARTICLE_TEMPLATE</code>
-        の値へ戻ります。常に残したい値はRender DashboardのEnvironmentで設定してください。
+        <code>DEFAULT_ARTICLE_TEMPLATE</code> の値へ戻ります。
+        常に残したい値はRender DashboardのEnvironmentで設定してください。
       </p>
     </div>
   {% endif %}
@@ -37,45 +37,9 @@
         </p>
       </div>
 
-      <div class="field">
-        <label for="wp-url">保存先のWordPress URL</label>
-        <input
-          id="wp-url"
-          name="wp_url"
-          type="url"
-          value="{{ settings.wp_url }}"
-          placeholder="https://blog.example.jp"
-          required
-        >
-        <p class="field-hint">
-          サイトのトップURLを入力してください。末尾の /wp-json は不要です。
-        </p>
-      </div>
-
-      <div class="form-actions settings-actions">
+      <div class="form-actions">
         <button type="submit">設定を保存</button>
-        <button
-          class="secondary-button"
-          type="button"
-          hx-post="/settings/test-wordpress"
-          hx-include="#wp-url"
-          hx-target="#wordpress-connection-status"
-          hx-swap="innerHTML"
-          hx-disabled-elt="this"
-          hx-indicator="#wordpress-test-indicator"
-        >
-          接続テスト
-        </button>
-        <span id="wordpress-test-indicator" class="htmx-indicator">
-          接続情報と投稿権限を確認しています…
-        </span>
       </div>
-      <div
-        id="wordpress-connection-status"
-        class="connection-status"
-        aria-live="polite"
-        aria-atomic="true"
-      ></div>
     </form>
   </section>
 
@@ -83,16 +47,14 @@
     {% if settings_ephemeral %}
       <h2>Renderの環境変数について</h2>
       <p>
-        WordPress URL、ユーザー名、アプリケーションパスワードはRender Dashboardの
-        Environmentにある <code>WP_URL</code>、<code>WP_USERNAME</code>、
-        <code>WP_APP_PASSWORD</code> へ設定すると再起動後も保持されます。
+        記事の型を再起動後も保持する場合は、Render DashboardのEnvironmentにある
+        <code>DEFAULT_ARTICLE_TEMPLATE</code> へ設定してください。
       </p>
     {% else %}
-      <h2>WordPress認証情報について</h2>
+      <h2>保存場所について</h2>
       <p>
-        ユーザー名とアプリケーションパスワードは画面には保存せず、
-        <code>.env</code> の <code>WP_USERNAME</code> と
-        <code>WP_APP_PASSWORD</code> を使用します。
+        ローカルでは、画面で設定した記事の型を
+        <code>data/settings.json</code> に保存します。
       </p>
     {% endif %}
   </section>

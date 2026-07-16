@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.default_template import DEFAULT_TEMPLATE
-from app.settings import load_settings
+from app.settings import load_settings, save_settings
 
 
 class DefaultTemplateTest(unittest.TestCase):
@@ -15,7 +15,6 @@ class DefaultTemplateTest(unittest.TestCase):
             environment = {
                 "APP_SETTINGS_PATH": str(settings_path),
                 "DEFAULT_ARTICLE_TEMPLATE": "",
-                "WP_URL": "",
             }
 
             with patch.dict(os.environ, environment, clear=False):
@@ -24,7 +23,10 @@ class DefaultTemplateTest(unittest.TestCase):
         self.assertEqual(settings["default_template"], DEFAULT_TEMPLATE)
         self.assertIn("【SEO・AIOの基本ルール】", settings["default_template"])
         self.assertIn("<h2>よくある質問</h2>", settings["default_template"])
-        self.assertIn("WordPress本文へ保存できるHTML断片", settings["default_template"])
+        self.assertIn(
+            "WordPress本文へそのまま貼り付けられるHTML断片",
+            settings["default_template"],
+        )
         self.assertIn(
             "記事内容を具体的に表す自然な日本語の見出しへ必ず変更",
             settings["default_template"],
@@ -40,7 +42,6 @@ class DefaultTemplateTest(unittest.TestCase):
             environment = {
                 "APP_SETTINGS_PATH": str(settings_path),
                 "DEFAULT_ARTICLE_TEMPLATE": "環境変数の記事テンプレート",
-                "WP_URL": "",
             }
 
             with patch.dict(os.environ, environment, clear=False):
@@ -50,6 +51,20 @@ class DefaultTemplateTest(unittest.TestCase):
             settings["default_template"],
             "環境変数の記事テンプレート",
         )
+
+    def test_saves_only_the_article_template(self):
+        with tempfile.TemporaryDirectory() as directory:
+            settings_path = Path(directory) / "settings.json"
+            with patch.dict(
+                os.environ,
+                {"APP_SETTINGS_PATH": str(settings_path)},
+                clear=False,
+            ):
+                saved = save_settings("新しい記事の型")
+                loaded = load_settings()
+
+        self.assertEqual(saved, {"default_template": "新しい記事の型"})
+        self.assertEqual(loaded, saved)
 
 
 if __name__ == "__main__":

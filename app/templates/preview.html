@@ -5,38 +5,55 @@
   </section>
 {% else %}
   <section class="panel result-panel">
-    <form
-      hx-post="/save"
-      hx-target="#save-status"
-      hx-swap="innerHTML"
-      hx-disabled-elt="find button"
-      hx-indicator="#save-indicator"
-    >
-      <div class="result-heading">
-        <div>
-          <p class="eyebrow">PREVIEW</p>
-          <h2>WordPress記事プレビュー</h2>
-        </div>
-        <div class="title-field">
+    <div class="result-heading">
+      <div>
+        <p class="eyebrow">PREVIEW</p>
+        <h2>記事プレビュー</h2>
+      </div>
+      <div class="title-field">
+        <div class="field-label-row">
           <label for="generated-title">記事タイトル</label>
-          <input id="generated-title" name="title" value="{{ title }}" required>
+          <button
+            class="compact-copy-button"
+            type="button"
+            data-copy-kind="title"
+            data-copy-target="#generated-title"
+            data-default-label="タイトルをコピー"
+            data-success-label="コピーしました ✓"
+          >
+            タイトルをコピー
+          </button>
         </div>
+        <input id="generated-title" value="{{ title }}">
       </div>
+    </div>
 
-      <article class="article-preview">{{ content | safe }}</article>
-      <textarea class="visually-hidden" name="content" aria-hidden="true">{{ content }}</textarea>
+    <article id="article-preview" class="article-preview">{{ content | safe }}</article>
 
-      <div class="save-bar">
-        <div>
-          <strong>この内容でよければ保存してください</strong>
-          <p>設定したWordPressへ、公開せず下書きとして保存します。</p>
-        </div>
-        <div class="save-actions">
-          <span id="save-indicator" class="htmx-indicator">保存中です…</span>
-          <button type="submit">WordPressへ下書き保存</button>
-        </div>
+    <div class="copy-bar">
+      <div>
+        <strong>この内容でよければコピーしてください</strong>
+        <p>書式を保ったまま、WordPressなどの記事編集画面へ貼り付けられます。</p>
       </div>
-      <div id="save-status" aria-live="polite"></div>
-    </form>
+      <button
+        class="copy-primary-button"
+        type="button"
+        data-copy-kind="article"
+        data-copy-target="#article-preview"
+        data-default-label="記事本文をコピー"
+        data-success-label="コピーしました ✓"
+      >
+        記事本文をコピー
+      </button>
+    </div>
+
+    <div
+      id="copy-status"
+      class="copy-status"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    ></div>
   </section>
 {% endif %}

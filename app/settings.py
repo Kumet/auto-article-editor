@@ -1,7 +1,6 @@
 import json
 import os
 from pathlib import Path
-from urllib.parse import urlparse
 
 from app.default_template import DEFAULT_TEMPLATE
 
@@ -13,32 +12,11 @@ def _settings_path() -> Path:
     return Path(configured_path) if configured_path else BASE_DIR / "data" / "settings.json"
 
 
-def validate_wp_url(wp_url: str) -> str:
-    """Normalize and validate a WordPress site URL."""
-    normalized = wp_url.strip().rstrip("/")
-    parsed = urlparse(normalized)
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise ValueError("WordPress URLは http または https から入力してください。")
-    return normalized
-
-
-def _environment_wp_url() -> str:
-    wp_url = os.getenv("WP_URL", "").strip()
-    if not wp_url:
-        return ""
-
-    try:
-        return validate_wp_url(wp_url)
-    except ValueError:
-        return ""
-
-
 def _default_settings() -> dict:
     return {
         "default_template": (
             os.getenv("DEFAULT_ARTICLE_TEMPLATE", "").strip() or DEFAULT_TEMPLATE
         ),
-        "wp_url": _environment_wp_url(),
     }
 
 
@@ -61,16 +39,13 @@ def load_settings() -> dict:
 
     if isinstance(stored, dict):
         template = stored.get("default_template")
-        wp_url = stored.get("wp_url")
         if isinstance(template, str) and template.strip():
             settings["default_template"] = template
-        if isinstance(wp_url, str):
-            settings["wp_url"] = wp_url.rstrip("/")
 
     return settings
 
 
-def save_settings(default_template: str, wp_url: str) -> dict:
+def save_settings(default_template: str) -> dict:
     """Persist application settings atomically as a local JSON file."""
     normalized_template = default_template.strip()
     if not normalized_template:
@@ -78,7 +53,6 @@ def save_settings(default_template: str, wp_url: str) -> dict:
 
     settings = {
         "default_template": normalized_template,
-        "wp_url": validate_wp_url(wp_url),
     }
     path = _settings_path()
     path.parent.mkdir(parents=True, exist_ok=True)
