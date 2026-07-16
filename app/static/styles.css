@@ -239,6 +239,16 @@ button:hover {
   transform: translateY(-1px);
 }
 
+.secondary-button {
+  color: var(--accent-dark);
+  background: transparent;
+}
+
+.secondary-button:hover {
+  color: #fff;
+  background: var(--accent-dark);
+}
+
 button:disabled {
   cursor: wait;
   opacity: 0.6;
@@ -364,7 +374,14 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   align-items: center;
 }
 
-.save-actions .htmx-indicator::before {
+.settings-actions .htmx-indicator.htmx-request {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.save-actions .htmx-indicator::before,
+.settings-actions .htmx-indicator::before {
   width: 14px;
   height: 14px;
   border: 2px solid rgba(31, 111, 74, 0.2);
@@ -530,6 +547,23 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   margin: 22px 0 0;
 }
 
+.connection-status:not(:empty) {
+  margin-top: 22px;
+}
+
+.connection-result {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.connection-result span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
 .status-error {
   color: var(--danger);
   background: var(--danger-soft);
@@ -608,7 +642,8 @@ code {
   .generation-spinner,
   .loading-dots i,
   .generation-progress::after,
-  .save-actions .htmx-indicator::before {
+  .save-actions .htmx-indicator::before,
+  .settings-actions .htmx-indicator::before {
     animation: none;
   }
 }

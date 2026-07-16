@@ -52,9 +52,30 @@
         </p>
       </div>
 
-      <div class="form-actions">
+      <div class="form-actions settings-actions">
         <button type="submit">設定を保存</button>
+        <button
+          class="secondary-button"
+          type="button"
+          hx-post="/settings/test-wordpress"
+          hx-include="#wp-url"
+          hx-target="#wordpress-connection-status"
+          hx-swap="innerHTML"
+          hx-disabled-elt="this"
+          hx-indicator="#wordpress-test-indicator"
+        >
+          接続テスト
+        </button>
+        <span id="wordpress-test-indicator" class="htmx-indicator">
+          接続情報と投稿権限を確認しています…
+        </span>
       </div>
+      <div
+        id="wordpress-connection-status"
+        class="connection-status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
     </form>
   </section>
 

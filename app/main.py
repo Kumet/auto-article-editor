@@ -12,7 +12,12 @@ from app.auth import require_basic_auth
 from app.extractor import ArticleExtractionError, extract_article
 from app.llm import rewrite_article
 from app.settings import load_settings, save_settings, settings_are_ephemeral
-from app.wordpress import sanitize_article_html, save_draft
+from app.wordpress import (
+    WordPressConnectionError,
+    sanitize_article_html,
+    save_draft,
+    test_wordpress_connection,
+)
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -96,6 +101,24 @@ def update_settings(
             ),
             "error": None,
         },
+    )
+
+
+@app.post("/settings/test-wordpress", response_class=HTMLResponse)
+def check_wordpress_connection(request: Request, wp_url: str = Form("")):
+    try:
+        connection = test_wordpress_connection(wp_url)
+    except WordPressConnectionError as exc:
+        return templates.TemplateResponse(
+            request=request,
+            name="wordpress_connection_status.html",
+            context={"error": str(exc), "connection": None},
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="wordpress_connection_status.html",
+        context={"error": None, "connection": connection},
     )
 
 

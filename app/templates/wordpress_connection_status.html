@@ -1,0 +1,14 @@
+{% if error %}
+  <div class="status status-error connection-result" role="alert">
+    <strong>接続テストに失敗しました。</strong>
+    <span>{{ error }}</span>
+  </div>
+{% else %}
+  <div class="status status-success connection-result" role="status">
+    <strong>接続テストに成功しました。</strong>
+    <span>
+      {{ connection.display_name }}（{{ connection.username }}）として認証され、
+      <code>{{ connection.site_url }}</code> へ下書きを作成できます。
+    </span>
+  </div>
+{% endif %}
