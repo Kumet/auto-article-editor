@@ -134,6 +134,10 @@ save_draft(title: str, content: str, wp_url: str) -> bool
 
 アプリの使い方を表示する。
 
+### GET /health
+
+RenderのHTTPヘルスチェック用。正常時にHTTP 200と `{"status": "ok"}` を返す。
+
 ## UI
 
 共通ヘッダーに3つのタブを表示する。
@@ -201,9 +205,15 @@ OPENAI_MODEL=gpt-5
 
 WP_USERNAME=
 WP_APP_PASSWORD=
+
+APP_USERNAME=
+APP_PASSWORD=
+APP_SETTINGS_PATH=
 ```
 
 保存先URLは環境変数ではなく設定画面から登録する。
+Renderでは `APP_SETTINGS_PATH=/var/data/settings.json` とし、永続ディスクへ保存する。
+`APP_USERNAME` と `APP_PASSWORD` は公開環境のBasic認証に使用する。
 
 ## 実装しないもの
 
