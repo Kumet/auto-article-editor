@@ -1,7 +1,5 @@
-from html import escape
 from pathlib import Path
 
-import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
@@ -12,12 +10,7 @@ from app.auth import require_basic_auth
 from app.extractor import ArticleExtractionError, extract_article
 from app.llm import rewrite_article
 from app.settings import load_settings, save_settings, settings_are_ephemeral
-from app.wordpress import (
-    WordPressConnectionError,
-    sanitize_article_html,
-    save_draft,
-    test_wordpress_connection,
-)
+from app.wordpress import sanitize_article_html
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -43,7 +36,6 @@ def index(request: Request):
         context={
             "active_tab": "editor",
             "default_template": settings["default_template"],
-            "wp_configured": bool(settings["wp_url"]),
         },
     )
 
@@ -67,10 +59,9 @@ def settings_page(request: Request):
 def update_settings(
     request: Request,
     default_template: str = Form(""),
-    wp_url: str = Form(""),
 ):
     try:
-        settings = save_settings(default_template, wp_url)
+        settings = save_settings(default_template)
     except (OSError, ValueError) as exc:
         return templates.TemplateResponse(
             request=request,
@@ -79,7 +70,6 @@ def update_settings(
                 "active_tab": "settings",
                 "settings": {
                     "default_template": default_template,
-                    "wp_url": wp_url,
                 },
                 "settings_ephemeral": settings_are_ephemeral(),
                 "message": None,
@@ -101,33 +91,6 @@ def update_settings(
             ),
             "error": None,
         },
-    )
-
-
-@app.post("/settings/test-wordpress", response_class=HTMLResponse)
-def check_wordpress_connection(request: Request, wp_url: str = Form("")):
-    try:
-        connection = test_wordpress_connection(wp_url)
-    except WordPressConnectionError as exc:
-        return templates.TemplateResponse(
-            request=request,
-            name="wordpress_connection_status.html",
-            context={
-                "error": str(exc),
-                "diagnosis": {
-                    "cause": exc.cause,
-                    "evidence": exc.evidence,
-                    "suggestions": exc.suggestions,
-                    "details": exc.details,
-                },
-                "connection": None,
-            },
-        )
-
-    return templates.TemplateResponse(
-        request=request,
-        name="wordpress_connection_status.html",
-        context={"error": None, "diagnosis": None, "connection": connection},
     )
 
 
@@ -176,35 +139,4 @@ def generate(request: Request, url: str = Form(""), template: str = Form("")):
             "title": article["title"],
             "content": content,
         },
-    )
-
-
-@app.post("/save", response_class=HTMLResponse)
-def save(title: str = Form(""), content: str = Form("")):
-    if not title.strip() or not content.strip():
-        return HTMLResponse(
-            '<p class="status status-error">タイトルと本文を入力してください。</p>'
-        )
-
-    try:
-        settings = load_settings()
-        saved = save_draft(title, content, settings["wp_url"])
-    except requests.RequestException:
-        return HTMLResponse(
-            '<p class="status status-error">'
-            "WordPressへの保存に失敗しました。接続情報とREST APIの状態を確認してください。"
-            "</p>"
-        )
-    except RuntimeError as exc:
-        return HTMLResponse(
-            f'<p class="status status-error">{escape(str(exc))}</p>'
-        )
-
-    if not saved:
-        return HTMLResponse(
-            '<p class="status status-error">WordPressへの保存に失敗しました。</p>'
-        )
-
-    return HTMLResponse(
-        '<p class="status status-success">WordPressへ下書き保存しました。</p>'
     )

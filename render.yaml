@@ -12,12 +12,6 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5
-      - key: WP_USERNAME
-        sync: false
-      - key: WP_APP_PASSWORD
-        sync: false
-      - key: WP_URL
-        sync: false
       - key: APP_USERNAME
         sync: false
       - key: APP_PASSWORD

@@ -6,16 +6,16 @@
   <header class="page-header compact-header">
     <p class="eyebrow">HOW TO USE</p>
     <h1>使い方</h1>
-    <p class="lead">初期設定からWordPressへの下書き保存まで、3つの手順で使えます。</p>
+    <p class="lead">記事の型を設定し、生成した記事をコピーするまでの3つの手順です。</p>
   </header>
 
   <div class="guide-grid">
     <section class="panel guide-card">
       <span class="step-number">01</span>
-      <h2>保存先を設定</h2>
+      <h2>記事の型を設定</h2>
       <p>
-        「設定」タブでデフォルトの記事の型とWordPress URLを入力し、
-        「接続テスト」で認証情報と下書き作成権限を確認してから設定を保存します。
+        「設定」タブで、普段使用する記事構成や文章ルールを確認し、
+        必要に応じて変更して保存します。
       </p>
       <a class="text-link" href="/settings">設定画面を開く</a>
     </section>
@@ -31,10 +31,10 @@
 
     <section class="panel guide-card">
       <span class="step-number">03</span>
-      <h2>下書きへ保存</h2>
+      <h2>タイトルと本文をコピー</h2>
       <p>
-        WordPress記事のプレビューとタイトルを確認し、問題がなければ
-        「WordPressへ下書き保存」を押します。記事が公開されることはありません。
+        プレビューを確認し、「タイトルをコピー」と「記事本文をコピー」を押します。
+        コピー後はボタンと通知で完了を確認できます。
       </p>
     </section>
   </div>
@@ -43,12 +43,12 @@
     <h2>事前に必要なもの</h2>
     <ul>
       <li>OpenAI APIキー</li>
-      <li>WordPressのユーザー名</li>
-      <li>WordPressで発行したアプリケーションパスワード</li>
+      <li>書き換えたい元記事のURL</li>
+      <li>コピーした記事を貼り付けるブログやCMS</li>
     </ul>
     <p>
-      これらの認証情報はプロジェクト直下の <code>.env</code> に設定します。
-      WordPress URLだけは「設定」タブから変更できます。
+      OpenAI APIキーはプロジェクト直下の <code>.env</code>、
+      またはRenderのEnvironmentへ設定します。
     </p>
   </section>
 {% endblock %}

@@ -211,7 +211,7 @@ textarea:focus {
 }
 
 .form-actions,
-.save-actions {
+.copy-actions {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -237,16 +237,6 @@ button {
 button:hover {
   background: var(--accent-dark);
   transform: translateY(-1px);
-}
-
-.secondary-button {
-  color: var(--accent-dark);
-  background: transparent;
-}
-
-.secondary-button:hover {
-  color: #fff;
-  background: var(--accent-dark);
 }
 
 button:disabled {
@@ -368,29 +358,6 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   animation: generation-progress 1.5s ease-in-out infinite;
 }
 
-.save-actions .htmx-indicator.htmx-request {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.settings-actions .htmx-indicator.htmx-request {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.save-actions .htmx-indicator::before,
-.settings-actions .htmx-indicator::before {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(31, 111, 74, 0.2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  content: "";
-  animation: generation-spin 0.8s linear infinite;
-}
-
 @keyframes generation-spin {
   to {
     transform: rotate(360deg);
@@ -466,6 +433,40 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   font-weight: 750;
 }
 
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 9px;
+}
+
+.field-label-row label {
+  margin-bottom: 0;
+}
+
+.compact-copy-button {
+  min-height: 34px;
+  border-color: #a9c8b4;
+  padding: 0 12px;
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.compact-copy-button:hover {
+  color: #fff;
+}
+
+.copy-primary-button.is-copied,
+.compact-copy-button.is-copied {
+  border-color: var(--success);
+  color: #fff;
+  background: var(--success);
+  transform: none;
+}
+
 .article-preview {
   max-height: 680px;
   overflow: auto;
@@ -523,7 +524,7 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   white-space: nowrap;
 }
 
-.save-bar {
+.copy-bar {
   display: flex;
   justify-content: space-between;
   gap: 24px;
@@ -531,89 +532,52 @@ form:has(.generation-status.htmx-request) .button-loading-label {
   padding-top: 28px;
 }
 
-.save-bar p {
+.copy-bar p {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.copy-status {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  max-width: min(420px, calc(100% - 32px));
+  border: 1px solid transparent;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.55;
+  opacity: 0;
+  box-shadow: 0 18px 42px rgba(23, 35, 29, 0.18);
+  transform: translateY(12px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.copy-status.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.copy-status-success {
+  border-color: #acd0b9;
+  color: var(--success);
+  background: #f0faf3;
+}
+
+.copy-status-error {
+  border-color: #e7b8b2;
+  color: var(--danger);
+  background: var(--danger-soft);
 }
 
 .status {
   margin: 0 0 22px;
   padding: 14px 16px;
   font-weight: 700;
-}
-
-#save-status .status {
-  margin: 22px 0 0;
-}
-
-.connection-status:not(:empty) {
-  margin-top: 22px;
-}
-
-.connection-result {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 0;
-  line-height: 1.6;
-}
-
-.connection-result span {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.diagnosis-block {
-  margin-top: 12px;
-  border-top: 1px solid currentColor;
-  padding-top: 14px;
-  color: var(--ink);
-}
-
-.diagnosis-block h3 {
-  margin: 14px 0 5px;
-  font-size: 0.86rem;
-}
-
-.diagnosis-block h3:first-child {
-  margin-top: 0;
-}
-
-.diagnosis-block p,
-.diagnosis-block ul,
-.diagnosis-block ol {
-  margin: 0;
-  font-size: 0.86rem;
-  font-weight: 500;
-}
-
-.diagnosis-block ul,
-.diagnosis-block ol {
-  padding-left: 1.4rem;
-}
-
-.diagnosis-details {
-  display: grid;
-  gap: 5px;
-  margin: 0;
-  font-size: 0.82rem;
-  font-weight: 500;
-}
-
-.diagnosis-details div {
-  display: grid;
-  grid-template-columns: minmax(110px, 0.35fr) minmax(0, 1fr);
-  gap: 12px;
-}
-
-.diagnosis-details dt {
-  font-weight: 750;
-}
-
-.diagnosis-details dd {
-  margin: 0;
-  overflow-wrap: anywhere;
 }
 
 .status-error {
@@ -693,10 +657,12 @@ code {
   .generation-status,
   .generation-spinner,
   .loading-dots i,
-  .generation-progress::after,
-  .save-actions .htmx-indicator::before,
-  .settings-actions .htmx-indicator::before {
+  .generation-progress::after {
     animation: none;
+  }
+
+  .copy-status {
+    transition: none;
   }
 }
 
@@ -731,7 +697,7 @@ code {
     min-height: 0;
   }
 
-  .save-bar {
+  .copy-bar {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -749,13 +715,29 @@ code {
   }
 
   .form-actions,
-  .save-actions {
+  .copy-actions {
     align-items: flex-start;
     flex-direction: column;
   }
 
   button {
     width: 100%;
+  }
+
+  .field-label-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .compact-copy-button {
+    width: auto;
+  }
+
+  .copy-status {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    max-width: none;
   }
 
   .app-name {
