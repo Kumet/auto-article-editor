@@ -46,8 +46,28 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit">プレビューを作成</button>
-        <span id="generate-indicator" class="htmx-indicator">記事を読み込み、作成しています…</span>
+        <button type="submit">
+          <span class="button-default-label">プレビューを作成</span>
+          <span class="button-loading-label" aria-hidden="true">生成中…</span>
+        </button>
+      </div>
+
+      <div
+        id="generate-indicator"
+        class="htmx-indicator generation-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <span class="generation-spinner" aria-hidden="true"></span>
+        <span class="generation-message">
+          <strong>記事を生成しています</strong>
+          <span>
+            元記事を読み込み、内容を整理しています
+            <span class="loading-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          </span>
+        </span>
+        <span class="generation-progress" aria-hidden="true"></span>
       </div>
     </form>
   </section>
