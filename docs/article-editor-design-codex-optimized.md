@@ -85,10 +85,12 @@ save_settings(default_template: str, wp_url: str) -> dict
 
 ```python
 sanitize_article_html(content: str) -> str
+test_wordpress_connection(wp_url: str) -> dict[str, str]
 save_draft(title: str, content: str, wp_url: str) -> bool
 ```
 
 生成されたHTMLはプレビュー前とWordPress送信前にサニタイズする。
+接続テストでは記事を作成せず、現在のユーザー情報と `edit_posts` 権限を確認する。
 
 ## API
 
@@ -130,6 +132,11 @@ save_draft(title: str, content: str, wp_url: str) -> bool
 
 デフォルトの記事の型とWordPress URLを `data/settings.json` に保存する。
 
+### POST /settings/test-wordpress
+
+入力中のWordPress URL、環境変数のユーザー名とアプリケーションパスワードを使い、
+REST API認証と下書き作成権限を確認する。記事の作成・変更は行わない。
+
 ### GET /guide
 
 アプリの使い方を表示する。
@@ -159,6 +166,7 @@ RenderのHTTPヘルスチェック用。正常時にHTTP 200と `{"status": "ok"
 
 - デフォルトの記事の型
 - 保存先のWordPress URL
+- WordPress接続テストボタン
 - 設定保存ボタン
 
 WordPressのユーザー名とアプリケーションパスワードは画面には保存しない。
