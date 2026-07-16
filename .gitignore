@@ -5,3 +5,5 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+data/settings.json
+data/settings.tmp

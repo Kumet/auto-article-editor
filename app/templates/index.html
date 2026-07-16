@@ -1,56 +1,56 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>記事編集アプリ</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  </head>
-  <body>
-    <main class="container">
-      <header class="page-header">
-        <p class="eyebrow">AI ARTICLE WORKSPACE</p>
-        <h1>記事を、公開できる形へ。</h1>
-        <p class="lead">
-          記事URLと仕上げ方を指定すると、内容を抽出してMarkdownへリライトします。
-        </p>
-      </header>
+{% extends "base.html" %}
 
-      <section class="panel input-panel">
-        <form
-          hx-post="/generate"
-          hx-target="#result"
-          hx-swap="innerHTML"
-          hx-disabled-elt="find button"
-          hx-indicator="#generate-indicator"
+{% block title %}記事編集 | 記事編集アプリ{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">ARTICLE EDITOR</p>
+    <h1>記事編集</h1>
+    <p class="lead">
+      元記事のURLを入力すると、設定した記事の型に沿ってWordPress用の記事を作成します。
+    </p>
+  </header>
+
+  {% if not wp_configured %}
+    <div class="notice">
+      保存先が未設定です。先に<a href="/settings">設定画面</a>でWordPress URLを登録してください。
+    </div>
+  {% endif %}
+
+  <section class="panel input-panel">
+    <form
+      hx-post="/generate"
+      hx-target="#result"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button"
+      hx-indicator="#generate-indicator"
+    >
+      <div class="field">
+        <label for="url">元記事のURL</label>
+        <input
+          id="url"
+          name="url"
+          type="url"
+          placeholder="https://example.com/article"
+          autocomplete="url"
+          required
         >
-          <div class="field">
-            <label for="url">記事URL</label>
-            <input
-              id="url"
-              name="url"
-              type="url"
-              placeholder="https://example.com/article"
-              autocomplete="url"
-              required
-            >
-          </div>
+      </div>
 
-          <div class="field">
-            <label for="template">出力形式</label>
-            <textarea id="template" name="template" rows="5" required>{{ default_template }}</textarea>
-            <p class="field-hint">見出し構成、文体、想定読者などを自由に指定できます。</p>
-          </div>
+      <div class="field">
+        <label for="template">記事の型</label>
+        <textarea id="template" name="template" rows="7" required>{{ default_template }}</textarea>
+        <p class="field-hint">
+          設定画面のデフォルト値が入っています。今回だけ変更することもできます。
+        </p>
+      </div>
 
-          <div class="form-actions">
-            <button type="submit">記事を生成</button>
-            <span id="generate-indicator" class="htmx-indicator">記事を読み込み、編集中です…</span>
-          </div>
-        </form>
-      </section>
+      <div class="form-actions">
+        <button type="submit">プレビューを作成</button>
+        <span id="generate-indicator" class="htmx-indicator">記事を読み込み、作成しています…</span>
+      </div>
+    </form>
+  </section>
 
-      <div id="result" class="result-slot" aria-live="polite"></div>
-    </main>
-  </body>
-</html>
+  <div id="result" class="result-slot" aria-live="polite"></div>
+{% endblock %}

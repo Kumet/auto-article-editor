@@ -1,6 +1,6 @@
 {% if error %}
   <section class="panel error-panel" role="alert">
-    <h2>生成できませんでした</h2>
+    <h2>プレビューを作成できませんでした</h2>
     <p>{{ error }}</p>
   </section>
 {% else %}
@@ -14,47 +14,26 @@
     >
       <div class="result-heading">
         <div>
-          <p class="eyebrow">GENERATED ARTICLE</p>
-          <h2>生成結果</h2>
+          <p class="eyebrow">PREVIEW</p>
+          <h2>WordPress記事プレビュー</h2>
         </div>
         <div class="title-field">
-          <label for="generated-title">タイトル</label>
+          <label for="generated-title">記事タイトル</label>
           <input id="generated-title" name="title" value="{{ title }}" required>
         </div>
       </div>
 
-      <div class="editor-grid">
-        <section class="editor-column">
-          <div class="column-heading">
-            <span class="column-number">01</span>
-            <h3>HTMLプレビュー</h3>
-          </div>
-          <article class="article-preview">{{ preview_html | safe }}</article>
-        </section>
-
-        <section class="editor-column">
-          <div class="column-heading">
-            <span class="column-number">02</span>
-            <h3>Markdown</h3>
-          </div>
-          <textarea
-            class="markdown-editor"
-            name="markdown"
-            aria-label="Markdown本文"
-            spellcheck="false"
-            required
-          >{{ markdown }}</textarea>
-        </section>
-      </div>
+      <article class="article-preview">{{ content | safe }}</article>
+      <textarea class="visually-hidden" name="content" aria-hidden="true">{{ content }}</textarea>
 
       <div class="save-bar">
         <div>
-          <strong>編集内容をWordPressへ送信</strong>
-          <p>公開はせず、下書きとして保存します。</p>
+          <strong>この内容でよければ保存してください</strong>
+          <p>設定したWordPressへ、公開せず下書きとして保存します。</p>
         </div>
         <div class="save-actions">
           <span id="save-indicator" class="htmx-indicator">保存中です…</span>
-          <button type="submit" class="secondary-button">WordPressへ保存</button>
+          <button type="submit">WordPressへ下書き保存</button>
         </div>
       </div>
       <div id="save-status" aria-live="polite"></div>
