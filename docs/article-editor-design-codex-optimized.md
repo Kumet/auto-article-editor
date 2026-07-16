@@ -2,270 +2,220 @@
 
 ## 目的
 
-記事URLを入力し、AIで指定フォーマットへリライトし、内容を確認してWordPressへ下書き保存する。
+記事URLを入力し、AIでWordPress用の記事へリライトし、プレビューを確認して
+設定済みのWordPressへ下書き保存する。
 
 ## 開発方針
 
--   FastAPI + HTMX
--   実装速度最優先
--   個人利用専用
--   YAGNI徹底
--   JavaScriptを書かない（HTMXのみ）
--   DBなし
--   Dockerなし
--   非同期処理なし
--   テストコードなし
+- FastAPI + HTMX
+- 個人利用専用
+- JavaScriptを書かない
+- DBなし
+- Dockerなし
+- 非同期処理なし
+- 設定はローカルJSONへ保存
 
-------------------------------------------------------------------------
+## ディレクトリ構成
 
-# ディレクトリ構成
-
-``` text
+```text
 app/
     main.py
     extractor.py
     llm.py
+    settings.py
     wordpress.py
 
     templates/
+        base.html
         index.html
         preview.html
+        settings.html
+        guide.html
 
     static/
+        styles.css
+
+data/
+    settings.json
 
 .env
 requirements.txt
 ```
 
-------------------------------------------------------------------------
+`data/settings.json` はアプリの初回設定保存時に作成し、Git管理対象外とする。
 
-# 関数一覧
+## 関数一覧
 
-## extractor.py
+### extractor.py
 
-``` python
+```python
 extract_article(url: str) -> dict
 ```
 
-返却
+返却:
 
-``` python
+```python
 {
     "title": str,
-    "content": str
+    "content": str,
 }
 ```
 
-------------------------------------------------------------------------
+### llm.py
 
-## llm.py
-
-``` python
-rewrite_article(
-    article: str,
-    template: str
-) -> str
+```python
+rewrite_article(article: str, template: str) -> str
 ```
 
-返却
+返却はWordPress本文欄へ登録できるHTML断片。
 
-Markdown全文
+### settings.py
 
-------------------------------------------------------------------------
-
-## wordpress.py
-
-``` python
-save_draft(
-    title: str,
-    markdown: str
-) -> bool
+```python
+load_settings() -> dict
+save_settings(default_template: str, wp_url: str) -> dict
 ```
 
-------------------------------------------------------------------------
+保存項目:
 
-# API
+- デフォルトの記事の型
+- 保存先のWordPress URL
 
-## GET /
+### wordpress.py
 
-トップ画面
-
-------------------------------------------------------------------------
-
-## POST /generate
-
-入力
-
--   url
--   template
-
-処理
-
-1.  記事取得
-2.  本文抽出
-3.  AIリライト
-4.  preview.html返却
-
-------------------------------------------------------------------------
-
-## POST /save
-
-入力
-
--   title
--   markdown
-
-処理
-
-WordPressへdraft保存
-
-------------------------------------------------------------------------
-
-# HTMX
-
-index.html
-
-``` html
-<form
- hx-post="/generate"
- hx-target="#result"
- hx-swap="innerHTML">
+```python
+sanitize_article_html(content: str) -> str
+save_draft(title: str, content: str, wp_url: str) -> bool
 ```
 
-返却
+生成されたHTMLはプレビュー前とWordPress送信前にサニタイズする。
 
-preview.html
+## API
 
-JavaScriptは書かない。
+### GET /
 
-------------------------------------------------------------------------
+記事編集画面。
 
-# UI
+入力:
 
-初期画面
+- 元記事のURL
+- 記事の型
 
--   URL入力
--   出力形式
--   生成ボタン
+記事の型には設定画面で保存したデフォルト値を表示する。
 
-生成後
+### POST /generate
 
-左
+処理:
 
--   HTMLプレビュー
+1. 記事取得
+2. 本文抽出
+3. WordPress用HTMLへAIリライト
+4. HTMLをサニタイズ
+5. プレビューを返却
 
-右
+### POST /save
 
--   Markdown textarea
+入力:
 
-下部
+- title
+- content
 
--   WordPressへ保存
+設定済みのWordPress URLへ `draft` として保存する。
 
-------------------------------------------------------------------------
+### GET /settings
 
-# OpenAI
+設定画面。
 
-入力
+### POST /settings
 
--   タイトル
--   本文
--   出力形式
+デフォルトの記事の型とWordPress URLを `data/settings.json` に保存する。
 
-出力
+### GET /guide
 
-Markdown
+アプリの使い方を表示する。
 
-------------------------------------------------------------------------
+## UI
 
-# WordPress
+共通ヘッダーに3つのタブを表示する。
 
-REST API
+- 記事編集
+- 設定
+- 使い方
 
-POST
+### 記事編集
 
-/wp-json/wp/v2/posts
+- 元記事URL
+- 記事の型
+- プレビュー作成ボタン
+- WordPress記事プレビュー
+- 記事タイトル
+- WordPressへの下書き保存ボタン
 
-送信
+### 設定
 
--   title
--   content
--   status=draft
+- デフォルトの記事の型
+- 保存先のWordPress URL
+- 設定保存ボタン
 
-認証
+WordPressのユーザー名とアプリケーションパスワードは画面には保存しない。
 
-Application Password
+### 使い方
 
-------------------------------------------------------------------------
+初期設定、プレビュー作成、下書き保存の手順を表示する。
 
-# 環境変数
+## OpenAI
 
-``` text
+入力:
+
+- 元記事のタイトル
+- 元記事の本文
+- 記事の型
+
+出力:
+
+- WordPress本文向けHTML断片
+- `html`、`head`、`body`、`h1` は含めない
+- Markdownは出力しない
+
+## WordPress
+
+REST API:
+
+```text
+POST /wp-json/wp/v2/posts
+```
+
+送信:
+
+- `title`
+- `content`
+- `status=draft`
+
+認証はApplication Passwordを使用する。
+
+## 環境変数
+
+```text
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5
 
-WP_URL=
 WP_USERNAME=
 WP_APP_PASSWORD=
 ```
 
-------------------------------------------------------------------------
+保存先URLは環境変数ではなく設定画面から登録する。
 
-# requirements.txt
+## 実装しないもの
 
-``` text
-fastapi
-uvicorn
-jinja2
-python-dotenv
-requests
-beautifulsoup4
-readability-lxml
-markdown
-openai
-```
-
-------------------------------------------------------------------------
-
-# 実装順
-
-1.  FastAPI起動
-2.  index.html
-3.  HTMX導入
-4.  extract_article()
-5.  rewrite_article()
-6.  preview表示
-7.  textarea編集
-8.  save_draft()
-
-------------------------------------------------------------------------
-
-# 実装しない
-
--   DB
--   Docker
--   Redis
--   Celery
--   クラス設計
--   Pydantic DTO
--   認証画面
--   管理画面
--   リッチエディタ
--   オートセーブ
--   履歴
--   一括処理
--   SEO分析
--   画像生成
--   カテゴリ取得
--   タグ取得
-
-------------------------------------------------------------------------
-
-# 開発ルール
-
--   関数ベースで実装する
--   クラスは作らない
--   型ヒントを付ける
--   共通化は必要になってから
--   同期処理で実装
--   まずMVPを完成させる
+- DB
+- Docker
+- Redis
+- Celery
+- 認証画面
+- リッチエディタ
+- オートセーブ
+- 履歴
+- 一括処理
+- SEO分析
+- 画像生成
+- カテゴリ・タグ管理

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}設定 | 記事編集アプリ{% endblock %}
+
+{% block content %}
+  <header class="page-header compact-header">
+    <p class="eyebrow">SETTINGS</p>
+    <h1>設定</h1>
+    <p class="lead">普段使う記事の型と、下書きの保存先を設定します。</p>
+  </header>
+
+  {% if message %}
+    <p class="status status-success" role="status">{{ message }}</p>
+  {% endif %}
+  {% if error %}
+    <p class="status status-error" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <section class="panel settings-panel">
+    <form method="post" action="/settings">
+      <div class="field">
+        <label for="default-template">デフォルトの記事の型</label>
+        <textarea id="default-template" name="default_template" rows="10" required>{{ settings.default_template }}</textarea>
+        <p class="field-hint">
+          見出し構成、文体、想定読者、文字量など、毎回使いたい指示を保存できます。
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="wp-url">保存先のWordPress URL</label>
+        <input
+          id="wp-url"
+          name="wp_url"
+          type="url"
+          value="{{ settings.wp_url }}"
+          placeholder="https://example.com"
+          required
+        >
+        <p class="field-hint">
+          サイトのトップURLを入力してください。末尾の /wp-json は不要です。
+        </p>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">設定を保存</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="credential-note">
+    <h2>WordPress認証情報について</h2>
+    <p>
+      ユーザー名とアプリケーションパスワードは画面には保存せず、
+      <code>.env</code> の <code>WP_USERNAME</code> と
+      <code>WP_APP_PASSWORD</code> を使用します。
+    </p>
+  </section>
+{% endblock %}

@@ -10,7 +10,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.extractor import ArticleExtractionError, extract_article
 from app.llm import rewrite_article
-from app.wordpress import markdown_to_html, save_draft
+from app.settings import load_settings, save_settings
+from app.wordpress import sanitize_article_html, save_draft
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,15 +24,73 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
+    settings = load_settings()
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
-            "default_template": (
-                "見出しを整理し、要点が伝わる自然な日本語の記事にしてください。"
-                "冒頭に短い導入を置き、H2・H3見出しを使って構成してください。"
-            )
+            "active_tab": "editor",
+            "default_template": settings["default_template"],
+            "wp_configured": bool(settings["wp_url"]),
         },
+    )
+
+
+@app.get("/settings", response_class=HTMLResponse)
+def settings_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="settings.html",
+        context={
+            "active_tab": "settings",
+            "settings": load_settings(),
+            "message": None,
+            "error": None,
+        },
+    )
+
+
+@app.post("/settings", response_class=HTMLResponse)
+def update_settings(
+    request: Request,
+    default_template: str = Form(""),
+    wp_url: str = Form(""),
+):
+    try:
+        settings = save_settings(default_template, wp_url)
+    except (OSError, ValueError) as exc:
+        return templates.TemplateResponse(
+            request=request,
+            name="settings.html",
+            context={
+                "active_tab": "settings",
+                "settings": {
+                    "default_template": default_template,
+                    "wp_url": wp_url,
+                },
+                "message": None,
+                "error": str(exc),
+            },
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="settings.html",
+        context={
+            "active_tab": "settings",
+            "settings": settings,
+            "message": "設定を保存しました。",
+            "error": None,
+        },
+    )
+
+
+@app.get("/guide", response_class=HTMLResponse)
+def guide(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="guide.html",
+        context={"active_tab": "guide"},
     )
 
 
@@ -47,7 +106,9 @@ def generate(request: Request, url: str = Form(""), template: str = Form("")):
     try:
         article = extract_article(url)
         source = f"# {article['title']}\n\n{article['content']}"
-        rewritten = rewrite_article(source, template)
+        content = sanitize_article_html(rewrite_article(source, template))
+        if not content:
+            raise RuntimeError("AIから記事本文が返されませんでした。")
     except (ArticleExtractionError, RuntimeError) as exc:
         return templates.TemplateResponse(
             request=request,
@@ -67,21 +128,21 @@ def generate(request: Request, url: str = Form(""), template: str = Form("")):
         context={
             "error": None,
             "title": article["title"],
-            "markdown": rewritten,
-            "preview_html": markdown_to_html(rewritten),
+            "content": content,
         },
     )
 
 
 @app.post("/save", response_class=HTMLResponse)
-def save(title: str = Form(""), markdown: str = Form("")):
-    if not title.strip() or not markdown.strip():
+def save(title: str = Form(""), content: str = Form("")):
+    if not title.strip() or not content.strip():
         return HTMLResponse(
             '<p class="status status-error">タイトルと本文を入力してください。</p>'
         )
 
     try:
-        saved = save_draft(title, markdown)
+        settings = load_settings()
+        saved = save_draft(title, content, settings["wp_url"])
     except requests.RequestException:
         return HTMLResponse(
             '<p class="status status-error">'
