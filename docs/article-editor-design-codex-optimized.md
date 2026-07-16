@@ -209,10 +209,14 @@ WP_APP_PASSWORD=
 APP_USERNAME=
 APP_PASSWORD=
 APP_SETTINGS_PATH=
+APP_SETTINGS_EPHEMERAL=
+WP_URL=
+DEFAULT_ARTICLE_TEMPLATE=
 ```
 
-保存先URLは環境変数ではなく設定画面から登録する。
-Renderでは `APP_SETTINGS_PATH=/var/data/settings.json` とし、永続ディスクへ保存する。
+ローカルでは保存先URLを設定画面から登録する。Render Freeでは `WP_URL` を永続的な初期値とし、
+画面変更は `APP_SETTINGS_PATH=/tmp/auto-article-editor/settings.json` へ一時保存する。
+記事の型は `DEFAULT_ARTICLE_TEMPLATE` で永続的な初期値を指定できる。
 `APP_USERNAME` と `APP_PASSWORD` は公開環境のBasic認証に使用する。
 
 ## 実装しないもの

@@ -3,7 +3,7 @@ services:
     name: auto-article-editor
     runtime: python
     region: singapore
-    plan: starter
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
@@ -16,13 +16,13 @@ services:
         sync: false
       - key: WP_APP_PASSWORD
         sync: false
+      - key: WP_URL
+        sync: false
       - key: APP_USERNAME
         sync: false
       - key: APP_PASSWORD
         sync: false
       - key: APP_SETTINGS_PATH
-        value: /var/data/settings.json
-    disk:
-      name: settings
-      mountPath: /var/data
-      sizeGB: 1
+        value: /tmp/auto-article-editor/settings.json
+      - key: APP_SETTINGS_EPHEMERAL
+        value: "true"

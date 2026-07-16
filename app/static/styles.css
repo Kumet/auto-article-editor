@@ -160,6 +160,10 @@ h1 {
   font-weight: 750;
 }
 
+.notice p {
+  margin: 6px 0 0;
+}
+
 .field + .field {
   margin-top: 26px;
 }

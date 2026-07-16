@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 from app.auth import require_basic_auth
 from app.extractor import ArticleExtractionError, extract_article
 from app.llm import rewrite_article
-from app.settings import load_settings, save_settings
+from app.settings import load_settings, save_settings, settings_are_ephemeral
 from app.wordpress import sanitize_article_html, save_draft
 
 
@@ -51,6 +51,7 @@ def settings_page(request: Request):
         context={
             "active_tab": "settings",
             "settings": load_settings(),
+            "settings_ephemeral": settings_are_ephemeral(),
             "message": None,
             "error": None,
         },
@@ -75,6 +76,7 @@ def update_settings(
                     "default_template": default_template,
                     "wp_url": wp_url,
                 },
+                "settings_ephemeral": settings_are_ephemeral(),
                 "message": None,
                 "error": str(exc),
             },
@@ -86,7 +88,12 @@ def update_settings(
         context={
             "active_tab": "settings",
             "settings": settings,
-            "message": "設定を保存しました。",
+            "settings_ephemeral": settings_are_ephemeral(),
+            "message": (
+                "設定を一時保存しました。Render Freeでは再起動時に環境変数の値へ戻ります。"
+                if settings_are_ephemeral()
+                else "設定を保存しました。"
+            ),
             "error": None,
         },
     )
