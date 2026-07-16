@@ -16,6 +16,17 @@
     <p class="status status-error" role="alert">{{ error }}</p>
   {% endif %}
 
+  {% if settings_ephemeral %}
+    <div class="notice" role="note">
+      <strong>Render Freeでは画面からの変更は一時的です。</strong>
+      <p>
+        スピンダウン、再起動、再デプロイ後は、Renderの環境変数
+        <code>WP_URL</code> と <code>DEFAULT_ARTICLE_TEMPLATE</code>
+        の値へ戻ります。常に残したい値はRender DashboardのEnvironmentで設定してください。
+      </p>
+    </div>
+  {% endif %}
+
   <section class="panel settings-panel">
     <form method="post" action="/settings">
       <div class="field">
@@ -48,11 +59,20 @@
   </section>
 
   <section class="credential-note">
-    <h2>WordPress認証情報について</h2>
-    <p>
-      ユーザー名とアプリケーションパスワードは画面には保存せず、
-      <code>.env</code> の <code>WP_USERNAME</code> と
-      <code>WP_APP_PASSWORD</code> を使用します。
-    </p>
+    {% if settings_ephemeral %}
+      <h2>Renderの環境変数について</h2>
+      <p>
+        WordPress URL、ユーザー名、アプリケーションパスワードはRender Dashboardの
+        Environmentにある <code>WP_URL</code>、<code>WP_USERNAME</code>、
+        <code>WP_APP_PASSWORD</code> へ設定すると再起動後も保持されます。
+      </p>
+    {% else %}
+      <h2>WordPress認証情報について</h2>
+      <p>
+        ユーザー名とアプリケーションパスワードは画面には保存せず、
+        <code>.env</code> の <code>WP_USERNAME</code> と
+        <code>WP_APP_PASSWORD</code> を使用します。
+      </p>
+    {% endif %}
   </section>
 {% endblock %}
