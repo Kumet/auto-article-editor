@@ -3,15 +3,9 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
+from app.default_template import DEFAULT_TEMPLATE
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_TEMPLATE = (
-    "読みやすい日本語の記事にリライトしてください。\n"
-    "- 冒頭に記事の要点が伝わる導入文を置く\n"
-    "- H2・H3見出しで内容を整理する\n"
-    "- 一文を長くしすぎず、自然で簡潔な文体にする\n"
-    "- 最後に内容を簡潔にまとめる"
-)
 
 
 def _settings_path() -> Path:

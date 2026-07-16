@@ -158,7 +158,9 @@ APP_SETTINGS_EPHEMERAL=true
 
 ## デフォルトの記事の型を永続的に変更する
 
-環境変数 `DEFAULT_ARTICLE_TEMPLATE` は任意です。未設定の場合はアプリ内蔵の型を使用します。
+環境変数 `DEFAULT_ARTICLE_TEMPLATE` は任意です。未設定の場合は、検索意図への
+先行回答、比較、注意点、FAQ、WordPress向けHTML出力を指定したアプリ内蔵の
+SEO・AIO向けテンプレートを使用します。
 
 Render DashboardのEnvironmentへ、次のように追加できます。
 

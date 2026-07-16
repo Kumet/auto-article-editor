@@ -62,6 +62,8 @@ uvicorn app.main:app --reload
 Freeインスタンスでは設定画面から保存した値がスピンダウン、再起動、再デプロイで消えます。
 WordPress URLは `WP_URL`、永続的な記事の型は任意の
 `DEFAULT_ARTICLE_TEMPLATE` としてRenderのEnvironmentへ設定してください。
+`DEFAULT_ARTICLE_TEMPLATE` を設定しない場合は、検索意図への先行回答、比較表、
+注意点、FAQなどを含むアプリ内蔵のSEO・AIO向けテンプレートが使用されます。
 
 詳しい手順とトラブルシューティングは
 [`docs/render-deployment.md`](docs/render-deployment.md) を参照してください。
