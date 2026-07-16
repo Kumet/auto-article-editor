@@ -1,0 +1,63 @@
+{% if error %}
+  <section class="panel error-panel" role="alert">
+    <h2>生成できませんでした</h2>
+    <p>{{ error }}</p>
+  </section>
+{% else %}
+  <section class="panel result-panel">
+    <form
+      hx-post="/save"
+      hx-target="#save-status"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button"
+      hx-indicator="#save-indicator"
+    >
+      <div class="result-heading">
+        <div>
+          <p class="eyebrow">GENERATED ARTICLE</p>
+          <h2>生成結果</h2>
+        </div>
+        <div class="title-field">
+          <label for="generated-title">タイトル</label>
+          <input id="generated-title" name="title" value="{{ title }}" required>
+        </div>
+      </div>
+
+      <div class="editor-grid">
+        <section class="editor-column">
+          <div class="column-heading">
+            <span class="column-number">01</span>
+            <h3>HTMLプレビュー</h3>
+          </div>
+          <article class="article-preview">{{ preview_html | safe }}</article>
+        </section>
+
+        <section class="editor-column">
+          <div class="column-heading">
+            <span class="column-number">02</span>
+            <h3>Markdown</h3>
+          </div>
+          <textarea
+            class="markdown-editor"
+            name="markdown"
+            aria-label="Markdown本文"
+            spellcheck="false"
+            required
+          >{{ markdown }}</textarea>
+        </section>
+      </div>
+
+      <div class="save-bar">
+        <div>
+          <strong>編集内容をWordPressへ送信</strong>
+          <p>公開はせず、下書きとして保存します。</p>
+        </div>
+        <div class="save-actions">
+          <span id="save-indicator" class="htmx-indicator">保存中です…</span>
+          <button type="submit" class="secondary-button">WordPressへ保存</button>
+        </div>
+      </div>
+      <div id="save-status" aria-live="polite"></div>
+    </form>
+  </section>
+{% endif %}

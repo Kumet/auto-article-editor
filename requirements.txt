@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jinja2
+python-dotenv
+requests
+beautifulsoup4
+readability-lxml
+markdown
+openai
+python-multipart
