@@ -91,6 +91,8 @@ save_draft(title: str, content: str, wp_url: str) -> bool
 
 生成されたHTMLはプレビュー前とWordPress送信前にサニタイズする。
 接続テストでは記事を作成せず、現在のユーザー情報と `edit_posts` 権限を確認する。
+失敗時はHTTPステータス、応答形式、最終URL、リダイレクト、WordPressエラーコードから
+推定原因、判断根拠、確認事項を画面へ返す。認証情報や応答本文は表示しない。
 
 ## API
 

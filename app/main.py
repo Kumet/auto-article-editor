@@ -112,13 +112,22 @@ def check_wordpress_connection(request: Request, wp_url: str = Form("")):
         return templates.TemplateResponse(
             request=request,
             name="wordpress_connection_status.html",
-            context={"error": str(exc), "connection": None},
+            context={
+                "error": str(exc),
+                "diagnosis": {
+                    "cause": exc.cause,
+                    "evidence": exc.evidence,
+                    "suggestions": exc.suggestions,
+                    "details": exc.details,
+                },
+                "connection": None,
+            },
         )
 
     return templates.TemplateResponse(
         request=request,
         name="wordpress_connection_status.html",
-        context={"error": None, "connection": connection},
+        context={"error": None, "diagnosis": None, "connection": connection},
     )
 
 

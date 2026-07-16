@@ -2,6 +2,40 @@
   <div class="status status-error connection-result" role="alert">
     <strong>接続テストに失敗しました。</strong>
     <span>{{ error }}</span>
+    <div class="diagnosis-block">
+      <h3>推定原因</h3>
+      <p>{{ diagnosis.cause }}</p>
+
+      {% if diagnosis.evidence %}
+        <h3>判断根拠</h3>
+        <ul>
+          {% for item in diagnosis.evidence %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if diagnosis.details %}
+        <h3>通信結果</h3>
+        <dl class="diagnosis-details">
+          {% for label, value in diagnosis.details.items() %}
+            <div>
+              <dt>{{ label }}</dt>
+              <dd>{{ value }}</dd>
+            </div>
+          {% endfor %}
+        </dl>
+      {% endif %}
+
+      {% if diagnosis.suggestions %}
+        <h3>確認すること</h3>
+        <ol>
+          {% for item in diagnosis.suggestions %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ol>
+      {% endif %}
+    </div>
   </div>
 {% else %}
   <div class="status status-success connection-result" role="status">
@@ -10,5 +44,26 @@
       {{ connection.display_name }}（{{ connection.username }}）として認証され、
       <code>{{ connection.site_url }}</code> へ下書きを作成できます。
     </span>
+    <div class="diagnosis-block">
+      <h3>診断結果</h3>
+      <p>{{ connection.cause }}</p>
+
+      <h3>判断根拠</h3>
+      <ul>
+        {% for item in connection.evidence %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <h3>通信結果</h3>
+      <dl class="diagnosis-details">
+        {% for label, value in connection.details.items() %}
+          <div>
+            <dt>{{ label }}</dt>
+            <dd>{{ value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    </div>
   </div>
 {% endif %}
